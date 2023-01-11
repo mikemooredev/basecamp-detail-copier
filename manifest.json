@@ -1,0 +1,11 @@
+{
+	"version": "1.03",
+	"manifest_version": 3,
+	"name": "Basecamp Detail Copier",
+	"content_scripts": [
+		{
+			"matches": ["https://*.basecamp.com/*/buckets/*/card_tables/cards/*"],
+			"js": ["basecamp-detail-copier.js"]
+		}
+	]
+}
