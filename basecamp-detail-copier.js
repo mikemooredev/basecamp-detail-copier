@@ -1,23 +1,18 @@
 class BasecampDetailCopier {
   static selectors = {
-    toolbar: 'perma-toolbar',
-    title: 'todo__title'
+    button: '#basecamp-detail-copier',
+    toolbar: '.perma-toolbar',
+    title: '.todo__title'
   }
 
-  constructor () {
-     if(!this.toolbarEl) return
+  constructor() {
+    this.initialise()
+    document.addEventListener('turbo:render', this.initialise.bind(this))
+  }
+
+  initialise() {
+    if (!this.canInitialise) return
     this.toolbarEl.prepend(this.buttonEl)
-  }
-
-  get buttonEl () {
-    const buttonEl = document.createElement('button')
-    buttonEl.id = 'basecamp-detail-copier'
-    buttonEl.classList.add('btn')
-    buttonEl.classList.add('btn--small')
-    buttonEl.textContent = this.buttonText
-
-    buttonEl.addEventListener('click', this.handleClick.bind(this))
-    return buttonEl
   }
 
   handleClick(event) {
@@ -28,28 +23,51 @@ class BasecampDetailCopier {
   copyToClipboard(value) {
     navigator.clipboard.writeText(value).then(() => {
       console.info('Copied:', value)
-    },() => {
+    }, () => {
       console.error('Failed to copy:', value)
     })
   }
 
-  get titleEl () {
-    return document.querySelector(`.${this.constructor.selectors.title}`)
-  }
-
-  get titleContent () {
-    return this.titleEl?.textContent?.trim()
-  }
-
-  get buttonText () {
+  get buttonText() {
     return 'Copy Title and URL'
   }
 
-  get toolbarEl () {
-    return document.querySelector(`.${this.constructor.selectors.toolbar}`)
+  get buttonEl() {
+    const buttonEl = document.createElement('button')
+
+    buttonEl.id = this.constructor.selectors.button.replace('#', '')
+    buttonEl.classList.add('btn')
+    buttonEl.classList.add('btn--small')
+    buttonEl.textContent = this.buttonText
+    buttonEl.addEventListener('click', this.handleClick.bind(this))
+
+    return buttonEl
+  }
+
+  get hasButtonEl() {
+    return !!document.querySelector(this.constructor.selectors.button)
+  }
+
+  get toolbarEl() {
+    return document.querySelector(this.constructor.selectors.toolbar)
+  }
+
+  get titleEl() {
+    return document.querySelector(this.constructor.selectors.title)
+  }
+
+  get titleContent() {
+    return this.titleEl?.textContent?.trim()
+  }
+
+  get isValidUrl() {
+    return location.href.includes('/card_tables/') && location.href.includes('/cards/')
+  }
+
+  get canInitialise() {
+    return this.isValidUrl && this.toolbarEl && !this.hasButtonEl
   }
 }
 
-(function(){
-  window.BasecampDetailCopier = new BasecampDetailCopier()
-})()
+window.MikeMooreDev = window.MikeMooreDev || {}
+window.MikeMooreDev.BasecampDetailCopier = new BasecampDetailCopier()
