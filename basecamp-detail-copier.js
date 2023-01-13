@@ -6,8 +6,13 @@ class BasecampDetailCopier {
   }
 
   constructor() {
+    this.setupListeners()
     this.initialise()
-    document.addEventListener('turbo:render', this.initialise.bind(this))
+  }
+
+  setupListeners() {
+    this.initialise = this.initialise.bind(this)
+    document.addEventListener('turbo:load', this.initialise)
   }
 
   initialise() {
